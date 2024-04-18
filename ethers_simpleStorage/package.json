@@ -1,0 +1,21 @@
+{
+  "type": "module",
+  "scripts": {
+    "compileContract": "bun solcjs --bin --abi --include-path node_modules/ --base-path . -o . AnimeCharacters.sol"
+  },
+  "dependencies": {
+    "ethers": "^6.11.1",
+    "fs-extra": "^11.2.0",
+    "solc": "0.8.7-fixed"
+  },
+  "devDependencies": {
+    "@typechain/ethers-v5": "^11.1.2",
+    "@types/bun": "latest",
+    "@types/fs-extra": "^11.0.4"
+  },
+  "name": "hardhat_ethers_simplestorage",
+  "module": "deploy.ts",
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

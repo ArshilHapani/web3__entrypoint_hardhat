@@ -1,0 +1,29 @@
+{
+  "name": "hardhat_simple_storage",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "runSepolia": "npx hardhat run scripts/deploy.ts --network sepolia",
+    "runHardhat": "npx hardhat run scripts/deploy.ts",
+    "runHardhatWithBlockNumber": "npx hardhat run scripts/deploy.ts && npx hardhat blockNumber",
+    "runGanacheWithBlockNumber": "npx hardhat run scripts/deploy.ts --network ethereum && npx hardhat blockNumber --network ethereum",
+    "compileContract": "npx hardhat compile"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.6",
+    "@types/node": "^20.12.7",
+    "hardhat": "^2.22.3",
+    "hardhat-gas-reporter": "^2.1.1",
+    "tsc-node": "^0.0.3",
+    "typescript": "^5.4.5",
+    "solidity-coverage": "^0.8.12"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  }
+}
