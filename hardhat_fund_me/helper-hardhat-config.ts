@@ -4,9 +4,9 @@ const netWorkConfig: {
     ethUsdPriceFeed: string;
   };
 } = {
-  1115511: {
+  11155111: {
     name: "sepolia",
-    ethUsdPriceFeed: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
+    ethUsdPriceFeed: "0x1a81afB8146aeFfCFc5E50e8479e826E7D55b910",
   },
   97: {
     name: "bnb test net",
@@ -15,6 +15,10 @@ const netWorkConfig: {
   80002: {
     name: "amony",
     ethUsdPriceFeed: "0xF0d50568e3A7e8259E16663972b11910F89BD8e7",
+  },
+  1337: {
+    name: "ethereum ganache",
+    ethUsdPriceFeed: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
   },
 };
 

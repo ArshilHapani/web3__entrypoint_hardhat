@@ -3,10 +3,15 @@ pragma solidity ^0.8.17;
 
 import "./PriceConvertor.sol";
 
-error NotOwner();
-error TransactionFail();
-error RequireMinEth();
+error FundMe__NotOwner();
+error FundMe__TransactionFail();
+error FundMe__RequireMinEth();
 
+/** @title A contract for crowd funding
+ * @author Hapani Arshil
+ * @notice You can use this contract to raise funds
+ * @dev This implements pricefeed as dependency
+ */
 contract FundMe {
     using PriceConvertor for uint256;
 
@@ -15,11 +20,24 @@ contract FundMe {
 
     uint256 public constant MIN_USD = 50 * 1e18;
     address public immutable i_owner;
-    address public immutable i_contract_address;
+    address immutable i_contract_address;
+
+    modifier onlyOwner() {
+        if (msg.sender != i_owner) {
+            revert FundMe__NotOwner();
+        }
+        _;
+    }
 
     constructor(address _contract_address) {
         i_owner = msg.sender;
         i_contract_address = _contract_address;
+    }
+    receive() external payable {
+        fund();
+    }
+    fallback() external payable {
+        fund();
     }
 
     function fund() public payable {
@@ -28,7 +46,7 @@ contract FundMe {
         );
 
         if (convertedEthValue < MIN_USD) {
-            revert RequireMinEth();
+            revert FundMe__RequireMinEth();
         }
         funders.push(msg.sender);
         funderToAmount[msg.sender] += msg.value;
@@ -48,21 +66,14 @@ contract FundMe {
         }("");
 
         if (!isSuccess) {
-            revert TransactionFail();
+            revert FundMe__TransactionFail();
         }
     }
-    modifier onlyOwner() {
-        if (msg.sender != i_owner) {
-            revert NotOwner();
-        }
-        _;
+    function getCurrentEthPrice() public view returns (uint256) {
+        return PriceConvertor.getCurrentEthPrice(i_contract_address);
     }
 
-    // implementing receive and fallback
-    receive() external payable {
-        fund();
-    }
-    fallback() external payable {
-        fund();
+    function getAggregatorAddress() public view returns (address) {
+        return i_contract_address;
     }
 }
