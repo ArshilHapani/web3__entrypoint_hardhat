@@ -7,6 +7,8 @@ import {
 } from "../helper-hardhat-config";
 import verifyContract from "../utils/verify";
 
+import "dotenv/config";
+
 (async function () {
   console.log("Deploying FundMe...");
   if (
@@ -36,9 +38,7 @@ export async function deployFundMe() {
     currentEthPrice: await fundMe.getCurrentEthPrice(),
   });
   console.log("-----------------------------------");
-  if (process.env.NODE_ENV !== "test") {
-    await verifyContract(contractAddress, [parameter]);
-  }
+  // await verifyContract(contractAddress, [parameter]);
   return FundMeFactory;
 }
 

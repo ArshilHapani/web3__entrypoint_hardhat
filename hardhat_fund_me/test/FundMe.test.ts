@@ -4,6 +4,8 @@ import { ethers, network } from "hardhat";
 import { deployFundMe } from "../scripts/deploy";
 import { netWorkConfig } from "../helper-hardhat-config";
 
+import "dotenv/config";
+
 import type {
   FundMe,
   FundMe__factory,
