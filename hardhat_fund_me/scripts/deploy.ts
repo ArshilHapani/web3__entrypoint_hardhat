@@ -12,8 +12,10 @@ import "dotenv/config";
 (async function () {
   if (
     network.name.toLocaleLowerCase().includes("hardhat") ||
+    network.name.toLowerCase().includes("localhost") ||
     network.name.toLowerCase().includes("local") ||
-    network.name.toLowerCase().includes("ganache")
+    network.name.toLowerCase().includes("ganache") ||
+    network.config.chainId === 31337
   ) {
     // await deployLocalMock();
     console.log("Deploying Static FundMe...");

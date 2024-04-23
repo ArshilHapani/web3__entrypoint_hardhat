@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "sepoliaRun": "npx hardhat run ./scripts/deploy.ts --network sepolia"
+    "test": "npx hardhat test --network ganache",
+    "test:staging": "npx hardhat test --network sepolia",
+    "coverage": "npx hardhat coverage"
   },
   "keywords": [],
-  "author": "",
+  "author": "Arshil",
   "license": "ISC",
   "description": "",
   "dependencies": {

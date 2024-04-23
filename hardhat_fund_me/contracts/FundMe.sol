@@ -15,8 +15,8 @@ error FundMe__RequireMinEth();
 contract FundMe {
     using PriceConvertor for uint256;
 
-    address[] public funders;
-    mapping(address => uint256) public fundersToAmount;
+    address[] public s_funders;
+    mapping(address => uint256) public s_fundersToAmount;
 
     uint256 public constant MIN_USD = 1;
     address public immutable i_owner;
@@ -48,19 +48,38 @@ contract FundMe {
         if (convertedEthValue < MIN_USD) {
             revert FundMe__RequireMinEth();
         }
-        funders.push(msg.sender);
-        fundersToAmount[msg.sender] += msg.value;
+        s_funders.push(msg.sender);
+        s_fundersToAmount[msg.sender] += msg.value;
     }
     function withdraw() public onlyOwner {
+        // every time reading from storage variable
         for (
             uint256 funderIndex = 0;
-            funderIndex < funders.length;
+            funderIndex < s_funders.length; // here
             funderIndex++
         ) {
-            address funder = funders[funderIndex];
+            address funder = s_funders[funderIndex]; // here
             // Reset the funder's balance to 0
-            fundersToAmount[funder] = 0;
+            s_fundersToAmount[funder] = 0; // and here updating
         }
+        s_funders = new address[](0);
+        (bool isSuccess, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
+
+        if (!isSuccess) {
+            revert FundMe__TransactionFail();
+        }
+    }
+
+    function cheapWithDraw() public payable onlyOwner {
+        address[] memory funderCopy = s_funders; // reading once
+        // mapping's can't be memory
+        for (uint256 i = 0; i < funderCopy.length; i++) {
+            address funder = funderCopy[i];
+            s_fundersToAmount[funder] = 0;
+        }
+        s_funders = new address[](0);
         (bool isSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
