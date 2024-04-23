@@ -16,9 +16,9 @@ contract FundMe {
     using PriceConvertor for uint256;
 
     address[] public funders;
-    mapping(address => uint256) public funderToAmount;
+    mapping(address => uint256) public fundersToAmount;
 
-    uint256 public constant MIN_USD = 50 * 1e18;
+    uint256 public constant MIN_USD = 1;
     address public immutable i_owner;
     address public immutable i_contract_address;
 
@@ -49,7 +49,7 @@ contract FundMe {
             revert FundMe__RequireMinEth();
         }
         funders.push(msg.sender);
-        funderToAmount[msg.sender] += msg.value;
+        fundersToAmount[msg.sender] += msg.value;
     }
     function withdraw() public onlyOwner {
         for (
@@ -59,7 +59,7 @@ contract FundMe {
         ) {
             address funder = funders[funderIndex];
             // Reset the funder's balance to 0
-            funderToAmount[funder] = 0;
+            fundersToAmount[funder] = 0;
         }
         (bool isSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
@@ -68,8 +68,5 @@ contract FundMe {
         if (!isSuccess) {
             revert FundMe__TransactionFail();
         }
-    }
-    function getCurrentEthPrice() public view returns (uint256) {
-        return PriceConvertor.getCurrentEthPrice(i_contract_address);
     }
 }

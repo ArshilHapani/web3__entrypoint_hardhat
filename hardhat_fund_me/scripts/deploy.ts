@@ -10,14 +10,16 @@ import verifyContract from "../utils/verify";
 import "dotenv/config";
 
 (async function () {
-  console.log("Deploying FundMe...");
   if (
     network.name.toLocaleLowerCase().includes("hardhat") ||
     network.name.toLowerCase().includes("local") ||
     network.name.toLowerCase().includes("ganache")
   ) {
-    await deployLocalMock();
+    // await deployLocalMock();
+    console.log("Deploying Static FundMe...");
+    await deployStaticFundMe();
   } else {
+    console.log("Deploying FundMe...");
     await deployFundMe();
   }
 })();
@@ -69,4 +71,22 @@ async function deployAggregatorV3() {
   );
   await mockV3Aggregator.deploymentTransaction()?.wait(1);
   return mockV3Aggregator;
+}
+
+export async function deployStaticFundMe() {
+  const FundMeV2Factory = await ethers.getContractFactory("FundMeV2");
+  const fundMeV2 = await FundMeV2Factory.deploy();
+  console.log("Deployed FundMeV2...");
+  await fundMeV2.deploymentTransaction()?.wait(1);
+  console.log("Sending transaction....");
+  const tx = await fundMeV2.donate({ value: 10 });
+  await tx.wait(1);
+  console.log(
+    "Transaction completed - block number",
+    await (
+      await tx.getBlock()
+    )?.number
+  );
+
+  return fundMeV2;
 }

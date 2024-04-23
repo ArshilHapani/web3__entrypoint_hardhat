@@ -3,7 +3,7 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-verify";
 import "hardhat-gas-reporter";
-import "@nomicfoundation/hardhat-ignition-ethers";
+// import "@nomicfoundation/hardhat-ignition-ethers";
 
 import "dotenv/config";
 
@@ -23,12 +23,12 @@ const config: HardhatUserConfig = {
     ganache: {
       url: "http://127.0.0.1:7545",
       accounts: [
-        "0xafeebd6b2c3af9521bb3490c4353101f13ae780feab70e453c8164dbc44ea22e",
+        "0xa31912876f593a8acb572d13391c8b8a0199dc1c58f8eb49fa51c63455541113",
       ],
       chainId: 1337,
     },
     // local network (hardhat)
-    localHardHat: {
+    localhost: {
       url: "http://127.0.0.1:8545/",
       accounts: [
         "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
