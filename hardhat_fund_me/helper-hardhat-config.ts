@@ -18,7 +18,7 @@ const netWorkConfig: {
   },
   1337: {
     name: "ethereum ganache",
-    ethUsdPriceFeed: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
+    ethUsdPriceFeed: "0x1a81afB8146aeFfCFc5E50e8479e826E7D55b910",
   },
 };
 

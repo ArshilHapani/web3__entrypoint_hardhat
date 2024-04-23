@@ -20,7 +20,7 @@ contract FundMe {
 
     uint256 public constant MIN_USD = 50 * 1e18;
     address public immutable i_owner;
-    address immutable i_contract_address;
+    address public immutable i_contract_address;
 
     modifier onlyOwner() {
         if (msg.sender != i_owner) {
@@ -33,12 +33,12 @@ contract FundMe {
         i_owner = msg.sender;
         i_contract_address = _contract_address;
     }
-    receive() external payable {
-        fund();
-    }
-    fallback() external payable {
-        fund();
-    }
+    // receive() external payable {
+    //     fund();
+    // } a
+    // fallback() external payable {
+    //     fund();
+    // }
 
     function fund() public payable {
         uint256 convertedEthValue = msg.value.getConversionRate(
@@ -71,9 +71,5 @@ contract FundMe {
     }
     function getCurrentEthPrice() public view returns (uint256) {
         return PriceConvertor.getCurrentEthPrice(i_contract_address);
-    }
-
-    function getAggregatorAddress() public view returns (address) {
-        return i_contract_address;
     }
 }

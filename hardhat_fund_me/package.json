@@ -3,18 +3,19 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "sepoliaRun": "npx hardhat run ./scripts/deploy.ts --network sepolia"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@chainlink/contracts": "^0.4.0",
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.1",
     "dotenv": "^16.4.5",
     "hardhat": "^2.22.3"
   },
   "devDependencies": {
+    "@chainlink/contracts": "^1.0.0",
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.6",
     "@nomiclabs/hardhat-ethers": "^2.2.3",

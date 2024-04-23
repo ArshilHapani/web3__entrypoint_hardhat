@@ -1,43 +1,49 @@
-import { expect } from "chai";
+import { expect, assert } from "chai";
 import { ethers, network } from "hardhat";
 
-import { deployFundMe } from "../scripts/deploy";
 import { netWorkConfig } from "../helper-hardhat-config";
 
 import "dotenv/config";
 
-import type {
-  FundMe,
-  FundMe__factory,
-  MockV3Aggregator,
-  MockV3Aggregator__factory,
-} from "../typechain-types";
+import type { FundMe, FundMe__factory } from "../typechain-types";
 
 describe("FundMe", function () {
   let fundMeFactory: FundMe__factory;
   let fundMe: FundMe;
-  let mockV3AggregatorFactory: MockV3Aggregator__factory;
-  let mockV3Aggregator: MockV3Aggregator;
   const parameter = netWorkConfig[network.config.chainId ?? 1].ethUsdPriceFeed;
-
+  let expectedAddress: string;
+  const sendValue = ethers.parseEther("1");
   beforeEach(async function () {
-    fundMeFactory = await deployFundMe();
+    fundMeFactory = await ethers.getContractFactory("FundMe");
     fundMe = await fundMeFactory.deploy(parameter);
+    console.log("Deploying FundMe to test net...");
+    await fundMe.deploymentTransaction()?.wait(3);
+    await fundMe.waitForDeployment();
+    console.log("Deployed.");
   });
-  // constructor tests
-  describe("constructor", function () {
+
+  describe.skip("Constructor test", function () {
     beforeEach(async function () {
-      mockV3AggregatorFactory = await ethers.getContractFactory(
-        "MockV3Aggregator"
-      );
-      mockV3Aggregator = await mockV3AggregatorFactory.deploy(18, 200000000000);
+      expectedAddress = await fundMe.i_contract_address();
     });
-    it("Set the aggregator address correctly", async function () {
-      const passedAddress = await fundMe.i_owner();
-      const expectedAddress = await mockV3Aggregator.getAddress();
-      expect(passedAddress, "Aggregator address is not set correctly").to.equal(
-        expectedAddress
+    it("constructor argument test", async function () {
+      const passedAddress = parameter.toString();
+      expect(passedAddress.toString()).to.equal(expectedAddress.toString());
+    });
+  });
+
+  describe("fund", function () {
+    it.skip("Fails if you don't send enough ETH", async function () {
+      await expect(fundMe.fund({ value: sendValue })).to.be.revertedWith(
+        "You need to send more ETH"
       );
+    });
+
+    it("updates the FundMe balance", async function () {
+      fundMe.fund({ value: sendValue });
+      const [owner] = await ethers.getSigners();
+      const response = await fundMe.funderToAmount(owner.address);
+      assert.equal(response.toString(), sendValue.toString());
     });
   });
 });

@@ -16,3 +16,9 @@ export default async function verifyContract(
     else console.error(error);
   }
 }
+
+// verify the passed hashed address string with regex
+export function verifyAddress(address: string) {
+  const regex = /^0x[a-fA-F0-9]{40}$/;
+  return regex.test(address);
+}
