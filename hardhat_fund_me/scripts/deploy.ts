@@ -81,14 +81,15 @@ export async function deployStaticFundMe() {
   console.log("Deployed FundMeV2...");
   await fundMeV2.deploymentTransaction()?.wait(1);
   console.log("Sending transaction....");
-  const tx = await fundMeV2.donate({ value: 10 });
-  await tx.wait(1);
-  console.log(
-    "Transaction completed - block number",
-    await (
-      await tx.getBlock()
-    )?.number
-  );
+  // const tx = await fundMeV2.donate({ value: 10 });
+  // await tx.wait(1);
+  // console.log(
+  //   "Transaction completed - block number",
+  //   await (
+  //     await tx.getBlock()
+  //   )?.number
+  // );
+  console.log("Contract deployed to:", await fundMeV2.getAddress());
 
   return fundMeV2;
 }

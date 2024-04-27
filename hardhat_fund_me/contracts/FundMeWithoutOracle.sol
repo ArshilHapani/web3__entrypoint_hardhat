@@ -64,4 +64,7 @@ contract FundMeV2 {
             revert FundMeV2__TransactionFail();
         }
     }
+    function getDonators() public view returns (address[] memory) {
+        return s_donators;
+    }
 }
