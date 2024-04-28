@@ -1,8 +1,9 @@
-import type { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
+
 import "@nomicfoundation/hardhat-toolbox";
-import "solidity-coverage";
-import "hardhat-contract-sizer";
+import "@nomicfoundation/hardhat-verify";
 import "hardhat-gas-reporter";
+// import "@nomicfoundation/hardhat-ignition-ethers";
 
 import "dotenv/config";
 
@@ -22,7 +23,7 @@ const config: HardhatUserConfig = {
     ganache: {
       url: "http://127.0.0.1:7545",
       accounts: [
-        "0x7b4e50de47cd29326b5af48faa98ba9578c5d76991f685f6657a3b5a94d34bdc",
+        "0xa31912876f593a8acb572d13391c8b8a0199dc1c58f8eb49fa51c63455541113",
       ],
       chainId: 1337,
     },
@@ -39,19 +40,9 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey:
       (process.env.ETHERSCAN_API_KEY as string) ?? "YOUR_ETHERSCAN_API_KEY", // get it from https://etherscan.io/
-    customChains: [
-      {
-        network: "ganache",
-        chainId: 1337,
-        urls: {
-          apiURL: "http://127.0.0.1:7545",
-          browserURL: "http://127.0.0.1:7545",
-        },
-      },
-    ],
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     outputFile: "gasReport.txt",
     noColors: true,
     currency: "INR",

@@ -1,0 +1,31 @@
+{
+  "name": "hardhat_fund_me",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test --network ganache",
+    "test:staging": "npx hardhat test --network sepolia",
+    "coverage": "npx hardhat coverage"
+  },
+  "keywords": [],
+  "author": "Arshil",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@nomicfoundation/hardhat-ignition-ethers": "^0.15.1",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.3"
+  },
+  "devDependencies": {
+    "@chainlink/contracts": "^1.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.6",
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@types/node": "^20.12.7",
+    "hardhat": "^2.22.3",
+    "hardhat-gas-reporter": "^2.1.1",
+    "solidity-coverage": "^0.8.12",
+    "tsc-node": "^0.0.3",
+    "typescript": "^5.4.5"
+  }
+}

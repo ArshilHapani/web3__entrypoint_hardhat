@@ -24,9 +24,10 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
 
     /* State Variables */
+    VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
+
     uint256 private immutable i_entranceFee;
     address payable[] private s_players; // if one player wins, then we need to pay them (so payable address)
-    VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     bytes32 private immutable i_keyHash; // gasLane
     uint64 private immutable s_subscriptionId;
     uint16 private constant REQUEST_CONFIRMATIONS = 3;
@@ -81,9 +82,13 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
      * 3. Our subscription is funded with LINK
      * 4. The lottery should be in "open" state
      */
-    function checkUpKeep(
-        bytes calldata /* checkData */
-    ) public returns (bool upkeepNeeded, bytes memory /* performData */) {
+    function checkUpkeep(
+        bytes memory /* checkData */
+    )
+        public
+        override
+        returns (bool upkeepNeeded, bytes memory /* performData */)
+    {
         bool isOpen = (s_lotteryState == LotteryState.OPEN);
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = s_players.length > 0;
@@ -93,7 +98,7 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
 
     // this function is called by the Chainlink Keeper
     function performUpkeep(bytes calldata /* performData */) external override {
-        (bool upKeepNeeded, ) = checkUpKeep(bytes(""));
+        (bool upKeepNeeded, ) = checkUpkeep("");
         if (!upKeepNeeded) {
             revert Lottery__UpKeepNotNeeded(
                 address(this).balance,
@@ -139,5 +144,24 @@ contract Lottery is VRFConsumerBaseV2, AutomationCompatibleInterface {
     }
     function getRecentWinner() public view returns (address) {
         return s_recentWinner;
+    }
+
+    function getLotteryState() public view returns (LotteryState) {
+        return s_lotteryState;
+    }
+    function getNumberOfPlayers() public view returns (uint256) {
+        return s_players.length;
+    }
+    function getLatestTimeStamp() public view returns (uint256) {
+        return s_lastTimeStamp;
+    }
+    function getRequestConfirmations() public pure returns (uint16) {
+        return REQUEST_CONFIRMATIONS;
+    }
+    function getNumWords() public pure returns (uint32) {
+        return NUM_WORDS;
+    }
+    function getInterval() public view returns (uint256) {
+        return i_interval;
     }
 }
