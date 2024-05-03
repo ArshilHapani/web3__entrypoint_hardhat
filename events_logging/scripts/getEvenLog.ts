@@ -2,10 +2,10 @@ import { ethers } from "hardhat";
 import { SimpleStorage } from "../typechain-types";
 
 (async function () {
-  const contractAddress =
-    "0xba54f5f7857f749ac83f3fdf226c5cdc470a10708abdca6bdfc0ab4958cefa2f"; // sepolia
   // const contractAddress =
-  //   "0xcf68abb62f5b3a1e69e120425ed861189cb74b1b8a443ca1bdd21a46755d6842"; // ganache
+  //   "0xba54f5f7857f749ac83f3fdf226c5cdc470a10708abdca6bdfc0ab4958cefa2f"; // sepolia
+  const contractAddress =
+    "0xcf68abb62f5b3a1e69e120425ed861189cb74b1b8a443ca1bdd21a46755d6842"; // ganache
 
   const receipt = await ethers.provider.getTransactionReceipt(contractAddress);
   const SimpleStorageFactory = await ethers.getContractFactory("SimpleStorage");

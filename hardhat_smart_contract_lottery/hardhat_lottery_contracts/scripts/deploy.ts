@@ -1,4 +1,5 @@
 import { network, ethers } from "hardhat";
+
 import { developmentChains, netWorkConfig } from "../helper-hardhat-config";
 import verifyContract from "../utils/verify";
 
@@ -42,6 +43,7 @@ export async function deployLottery(
     callbackGasLimit,
     interval
   );
+  const txRecept = await lotteryContract.deploymentTransaction()?.wait(1);
   if (process.env.ETHERSCAN_API_KEY) {
     console.log("Verifying contract on etherscan...");
     await verifyContract(await lotteryContract.getAddress(), [
@@ -53,7 +55,8 @@ export async function deployLottery(
       interval,
     ]);
   }
-  return lotteryContract;
+
+  return { lotteryContract, deployer: txRecept?.from ?? "" };
 }
 
 export async function deployMocks() {
@@ -69,5 +72,6 @@ export async function deployMocks() {
   await mockVrfCoordinator.deploymentTransaction()?.wait(1);
   const address = await mockVrfCoordinator.getAddress();
   console.log("Mock VRF Coordinator deployed to:", address);
+
   return mockVrfCoordinator;
 }
