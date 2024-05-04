@@ -23,12 +23,14 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
         const transactionReceipt = await transactionResponse.wait(1);
         const subscriptionId = (transactionReceipt?.logs[0] as any)
           .args[0] as string;
-        lottery = await deployLottery(
+        let { lotteryContract, deployer: deployerAr } = await deployLottery(
           await vrfCoordinatorV2Mock.getAddress(),
           subscriptionId ?? netWorkConfig[chainId].subscriptionId
         );
+        lottery = lotteryContract;
+
         lotteryEntranceFee = await lottery.getEntranceFee();
-        deployer = transactionReceipt?.from ?? "";
+        deployer = transactionReceipt?.from ?? deployerAr;
         interval = await lottery.getInterval();
       });
 
@@ -67,7 +69,7 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
           );
         });
 
-        it.skip("Dose not allow entrance when calculating ", async function () {
+        it("Dose not allow entrance when calculating ", async function () {
           await lottery.enterLottery({ value: lotteryEntranceFee });
 
           // increasing time
