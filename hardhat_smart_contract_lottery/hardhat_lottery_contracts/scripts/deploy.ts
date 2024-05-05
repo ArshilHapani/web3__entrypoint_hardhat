@@ -20,7 +20,7 @@ const chainId = network.config.chainId ?? 1;
     await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, VRF_SUB_FEE);
     await vrfCoordinatorV2Mock.addConsumer(
       subscriptionId,
-      await ethers.getSigners().then((res) => res[0].getAddress())
+      vrfCoordinatorV2Mock.getAddress()
     );
   } else {
     console.log("Deploying lottery contract...");

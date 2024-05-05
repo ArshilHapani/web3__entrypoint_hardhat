@@ -32,6 +32,14 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
         lotteryEntranceFee = await lottery.getEntranceFee();
         deployer = transactionReceipt?.from ?? deployerAr;
         interval = await lottery.getInterval();
+        await vrfCoordinatorV2Mock.fundSubscription(
+          subscriptionId,
+          ethers.parseEther("2")
+        );
+        await vrfCoordinatorV2Mock.addConsumer(
+          subscriptionId,
+          lottery.getAddress()
+        );
       });
 
       describe("constructor", function () {
@@ -91,11 +99,10 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
             Number(interval) + 1,
           ]);
           await network.provider.send("evm_mine", []);
-          const tx = await lottery.checkUpkeep("0x");
-          const upKeepNeeded = tx.value;
+          const [upKeepNeeded] = await lottery.checkUpkeep.staticCall("0x");
           assert(!upKeepNeeded);
         });
-        it.skip("Returns false if lottery isn't open", async function () {
+        it("Returns false if lottery isn't open", async function () {
           await lottery.enterLottery({ value: lotteryEntranceFee });
           await network.provider.send("evm_increaseTime", [
             Number(interval) + 1,
@@ -104,8 +111,9 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
 
           await lottery.performUpkeep("0x");
           const lotteryState = await lottery.getLotteryState();
-          const tx = await lottery.checkUpkeep(new Uint8Array(0));
-          const upKeepNeeded = tx.value;
+          const [upKeepNeeded] = await lottery.checkUpkeep.staticCall(
+            new Uint8Array(0)
+          );
           assert.equal(lotteryState.toString(), "1");
           assert(!upKeepNeeded);
         });
@@ -113,27 +121,26 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
         it("returns false if enough time has'nt pass", async function () {
           await lottery.enterLottery({ value: lotteryEntranceFee });
           await network.provider.send("evm_increaseTime", [
-            Number(interval) + 1,
+            Number(interval) - 5,
           ]);
           await network.provider.send("evm_mine", []);
           const tx = await lottery.checkUpkeep("0x");
-          const upKeepNeeded = tx.value;
+          const [upKeepNeeded] = await lottery.checkUpkeep.staticCall("0x");
           assert(!upKeepNeeded);
         });
 
-        it.skip("returns true if enough time has passed", async function () {
+        it("returns true if enough time has passed", async function () {
           await lottery.enterLottery({ value: lotteryEntranceFee });
           await network.provider.send("evm_increaseTime", [
             Number(interval) + 1,
           ]);
           await network.provider.send("evm_mine", []);
-          const tx = await lottery.checkUpkeep("0x");
-          const upKeepNeeded = tx.value;
+          const [upKeepNeeded] = await lottery.checkUpkeep.staticCall("0x");
           assert(upKeepNeeded);
         });
       });
       describe("performUpKeep", function () {
-        it.skip("It can only run if checkUpKeep is true", async function () {
+        it("It can only run if checkUpKeep is true", async function () {
           await lottery.enterLottery({ value: lotteryEntranceFee });
           await network.provider.send("evm_increaseTime", [
             Number(interval) + 1,
@@ -149,7 +156,7 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
           );
         });
 
-        it.skip("Updates the raffle state, emit the events and call the vrf coordinator", async function () {
+        it("Updates the raffle state, emit the events and call the vrf coordinator", async function () {
           await lottery.enterLottery({ value: lotteryEntranceFee });
           await network.provider.send("evm_increaseTime", [
             Number(interval) + 1,
@@ -183,7 +190,7 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
           ).to.be.revertedWith("nonexistent requestId");
         });
 
-        it.skip("Picks a winner, resets the lottery, and sends money", async function () {
+        it("Picks a winner, resets the lottery, and sends money", async function () {
           const additionalEntrance = 3;
           const startingAccounts = 1; // deployer = 0
           const accounts = await ethers.getSigners();
@@ -198,33 +205,40 @@ import type { Lottery, VRFCoordinatorV2Mock } from "../../typechain-types";
             });
           }
           const startTimeStamp = await lottery.getLatestTimeStamp();
-          await new Promise(async function (res, rej) {
-            lottery.addListener("WinnerPicked", async function () {
-              console.log("Event founded!!");
-              try {
-                const receiptWinner = await lottery.getRecentWinner();
-                console.log(`RecentWinner ---- ${receiptWinner}`);
-                const lotteryState = await lottery.getLotteryState();
-                const endingTimeStamp = await lottery.getLatestTimeStamp();
-                const numPlayers = await lottery.getNumberOfPlayers();
 
-                assert.equal(numPlayers.toString(), "0");
-                assert.equal(lotteryState.toString(), "0");
-                assert(Number(endingTimeStamp) > Number(startTimeStamp));
-              } catch (e) {
-                rej(e);
-              }
-              res(true);
-            });
+          await network.provider.send("evm_increaseTime", [
+            Number(interval) + 1,
+          ]);
+          await network.provider.send("evm_mine", []);
 
-            const tx = await lottery.performUpkeep("0x");
-            const receipt = await tx.wait(1);
-            const reqId = (receipt?.logs[1] as any)?.args[1];
-            await vrfCoordinatorV2Mock.fulfillRandomWords(
-              reqId,
-              lottery.getAddress()
-            );
+          let [upKeepNeeded] = await lottery.checkUpkeep.staticCall("0x");
+          const tx = await lottery.performUpkeep("0x");
+          const receipt = await tx.wait(1);
+          const reqId = (receipt?.logs[1] as any).args[0];
+
+          console.log("\nWaiting for event to be emitted...\n");
+          lottery.addListener("WinnerPicked", async function () {
+            console.log("Event founded!!");
+            try {
+              const receiptWinner = await lottery.getRecentWinner();
+              console.log(`RecentWinner ---- ${receiptWinner}`);
+              const lotteryState = await lottery.getLotteryState();
+              const numPlayers = await lottery.getNumberOfPlayers();
+              const endingTimeStamp = await lottery.getLatestTimeStamp();
+
+              assert.equal(numPlayers.toString(), "0");
+              assert.equal(lotteryState.toString(), "0");
+              assert(Number(endingTimeStamp) > Number(startTimeStamp));
+            } catch (e) {
+              console.error(e);
+            } finally {
+              lottery.removeAllListeners("WinnerPicked" as any);
+            }
           });
+          await vrfCoordinatorV2Mock.fulfillRandomWords(
+            reqId,
+            lottery.getAddress()
+          );
         });
       });
     });

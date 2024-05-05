@@ -1,4 +1,5 @@
 import type { HardhatUserConfig } from "hardhat/config";
+
 import "@nomicfoundation/hardhat-toolbox";
 import "solidity-coverage";
 import "hardhat-contract-sizer";
@@ -39,16 +40,6 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey:
       (process.env.ETHERSCAN_API_KEY as string) ?? "YOUR_ETHERSCAN_API_KEY", // get it from https://etherscan.io/
-    customChains: [
-      {
-        network: "ganache",
-        chainId: 1337,
-        urls: {
-          apiURL: "http://127.0.0.1:7545",
-          browserURL: "http://127.0.0.1:7545",
-        },
-      },
-    ],
   },
   gasReporter: {
     enabled: false,

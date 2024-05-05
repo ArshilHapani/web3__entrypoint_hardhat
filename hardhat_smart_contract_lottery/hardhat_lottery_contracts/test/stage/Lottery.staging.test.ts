@@ -1,10 +1,10 @@
 import { ethers, network } from "hardhat";
 import { assert, expect } from "chai";
 
-import { developmentChains, netWorkConfig } from "../helper-hardhat-config";
-import { deployLottery, deployMocks } from "../scripts/deploy";
+import { developmentChains, netWorkConfig } from "../../helper-hardhat-config";
+import { deployLottery } from "../../scripts/deploy";
 
-import type { Lottery, VRFCoordinatorV2Mock } from "../typechain-types";
+import type { Lottery } from "../../typechain-types";
 
 const chainID = network.config.chainId ?? 1;
 const vrfCoordinatorV2Address = netWorkConfig[chainID].vrfCoordinatorV2;
@@ -12,7 +12,7 @@ const subscriptionId = netWorkConfig[chainID].subscriptionId;
 
 developmentChains.includes(network.name)
   ? describe.skip
-  : describe.skip("Lottery", function () {
+  : describe("Lottery", function () {
       let lottery: Lottery;
       let lotteryEntranceFee: bigint;
       let deployer: string;
@@ -53,6 +53,8 @@ developmentChains.includes(network.name)
               } catch (error: any) {
                 console.log(error);
                 reject(error);
+              } finally {
+                lottery.removeAllListeners("WinnerPicked" as any);
               }
             });
 
