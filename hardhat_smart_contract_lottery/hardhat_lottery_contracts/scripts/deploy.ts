@@ -24,6 +24,7 @@ const chainId = network.config.chainId ?? 1;
     );
   } else {
     console.log("Deploying lottery contract...");
+    0x941eaf15324f76af617d6d1159d446233bbb98a6;
     vrfCoordinatorV2Address = netWorkConfig[chainId].vrfCoordinatorV2;
     subscriptionId = netWorkConfig[chainId].subscriptionId;
     await deployLottery(vrfCoordinatorV2Address, subscriptionId);

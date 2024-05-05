@@ -9,9 +9,11 @@ import { ethers, run } from "hardhat";
   await simpleStorage.deploymentTransaction()?.wait(1);
   await simpleStorage.waitForDeployment();
 
+  simpleStorage.once("storeNumber" as any, () => {
+    console.log("storeNumber event emitted");
+  });
   const tx = await simpleStorage.store(7);
   const txReceipt = await tx.wait(1);
-
   //   events
   const events = (txReceipt?.logs[0] as any)?.args;
   console.log(events);
