@@ -2,16 +2,16 @@
 
 "use client";
 
-import useWallet from "@/hooks/useWallet";
 import { useEffect } from "react";
+
+import useWallet from "@/hooks/useWallet";
 
 const Navbar = () => {
   const { connect, address, balance, isConnected, isLoading } = useWallet();
 
   useEffect(() => {
-    console.log({ isConnected, address });
     if (isConnected && address !== "") return;
-    if (typeof window !== "undefined") {
+    else if (typeof window !== "undefined") {
       if (window.localStorage.getItem("connected")) {
         connect();
       }
@@ -28,7 +28,7 @@ const Navbar = () => {
           window.localStorage.removeItem("connected");
         }
       }
-    }, 500);
+    }, 5000);
   }, [address]);
 
   return (

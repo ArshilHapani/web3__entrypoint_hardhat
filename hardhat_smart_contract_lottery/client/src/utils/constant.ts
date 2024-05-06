@@ -1,2 +1,5 @@
-export const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-//timestamp https://youtu.be/gyMwXuJrbJQ?t=62808
+export const CONTRACT_ADDRESS = {
+  localhost: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+  sepolia: "0xb4DDBFFB6E318bF8E2f212fCB7041313D43f5f42",
+  ganache: "0xC4d5e1215c8F86d7475Fda4912004d19e7d0F5B9",
+};

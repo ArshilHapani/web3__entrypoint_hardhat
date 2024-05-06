@@ -1,6 +1,6 @@
-import { ethers } from "ethers";
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
+import { ethers } from "ethers";
 
 interface WalletInterface {
   balance: number;
@@ -8,15 +8,19 @@ interface WalletInterface {
   connect: () => Promise<void>;
   setBalance: (balance: number) => void;
   setAddress: (address: string) => void;
-  provider?: ethers.Provider;
+  provider?:
+    | ethers.providers.Web3Provider
+    | ethers.providers.BaseProvider
+    | any;
   isConnected?: boolean;
   isLoading?: boolean;
+  signer?: ethers.Signer | any;
 }
 
 declare global {
   interface Window {
     ethereum?: {
-      request: (args: { method: string }) => Promise<void>;
+      request: (args: { method: string }) => Promise<string[]>;
       on: (event: string, callback: (accounts: string[]) => void) => void;
       selectedAddress?: string;
       removeListener: (
@@ -34,6 +38,7 @@ const useWallet = create<WalletInterface>((set) => ({
   balance: 0,
   address: "",
   provider: undefined,
+  signer: undefined,
   isLoading: false,
   isConnected:
     (typeof window !== "undefined" &&
@@ -41,7 +46,7 @@ const useWallet = create<WalletInterface>((set) => ({
       window.ethereum?.isConnected()) ??
     false,
   setBalance: (balance) =>
-    set({ balance: Number(ethers.parseEther(balance.toString())) }),
+    set({ balance: Number(ethers.utils.formatEther(balance.toString())) }),
   setAddress: (address) => set({ address }),
   async connect() {
     try {
@@ -52,20 +57,30 @@ const useWallet = create<WalletInterface>((set) => ({
         provider = ethers.getDefaultProvider();
         set({ provider });
       } else {
-        provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        set({ address: signer.address });
-        const balance = Number(
-          ethers.parseEther(
-            (await provider.getBalance(signer.address)).toString()
-          )
-        );
-        set({ balance });
-        set({ provider });
-        set({ isConnected: window.ethereum.isConnected() });
-        toast.success("Connected to Metamask");
+        await window.ethereum
+          .request({
+            method: "eth_requestAccounts",
+          })
+          .then(async (accounts) => {
+            provider = new ethers.providers.Web3Provider(
+              window?.ethereum as any
+            );
+            const signer = accounts[0];
+            const balance = Number(
+              ethers.utils.formatEther(
+                (await provider.getBalance(signer)).toString()
+              )
+            );
+            set({ address: signer });
+            set({ signer: provider.getSigner(signer) });
+            set({ balance });
+            set({ provider });
+            set({ isConnected: window?.ethereum?.isConnected() });
+            toast.success("Connected to Metamask");
+          });
       }
     } catch (error: any) {
+      console.error(error);
       if (error?.info?.error?.code === 4001) {
         toast.error("User denied connection request");
       } else {

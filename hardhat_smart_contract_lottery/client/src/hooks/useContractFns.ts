@@ -1,5 +1,7 @@
 import { Contract, ethers } from "ethers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import useWallet from "./useWallet";
 
 type ContractFnsType<T> = {
   contract: Contract & T;
@@ -7,10 +9,8 @@ type ContractFnsType<T> = {
   isLoading: boolean;
 };
 interface FunctionParameter {
-  functionName?: string;
   contractAddress: string;
   abi: any;
-  provider: ethers.Provider;
 }
 
 function useContractFns<T>({
@@ -20,16 +20,52 @@ function useContractFns<T>({
   const [error, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [contract, setContract] = useState<Contract & T>(null as any);
+  const {
+    provider,
+    balance,
+    address,
+    isConnected,
+    isLoading: walletLoading,
+    signer,
+  } = useWallet();
 
-  try {
-    setIsLoading(true);
-    const contract = new ethers.Contract(contractAddress, abi) as T & Contract;
-    setContract(contract);
-  } catch (error: any) {
-    setError(error);
-  } finally {
-    setIsLoading(false);
-  }
+  useEffect(() => {
+    (async function () {
+      try {
+        setIsLoading(true);
+        if (
+          provider &&
+          signer &&
+          address !== "" &&
+          balance !== 0 &&
+          isConnected &&
+          !walletLoading
+        ) {
+          const contract = new ethers.Contract(
+            contractAddress,
+            abi,
+            signer
+          ) as T & Contract;
+          setContract(contract);
+        }
+      } catch (error: any) {
+        console.log("Error in useContractFns Hook");
+        console.log(error);
+        setError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [
+    abi,
+    address,
+    balance,
+    contractAddress,
+    isConnected,
+    provider,
+    walletLoading,
+    signer,
+  ]);
 
   return { contract, error, isLoading };
 }
