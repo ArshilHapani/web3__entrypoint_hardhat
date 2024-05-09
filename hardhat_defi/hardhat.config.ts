@@ -1,16 +1,16 @@
-import type { HardhatUserConfig } from "hardhat/config";
-
+import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
-import "solidity-coverage";
-import "hardhat-contract-sizer";
-import "hardhat-gas-reporter";
 
 import "dotenv/config";
 
 const config: HardhatUserConfig = {
   // solidity: "0.8.24",
   solidity: {
-    compilers: [{ version: "0.8.24" }, { version: "0.6.6" }],
+    compilers: [
+      { version: "0.8.24" },
+      { version: "0.6.6" },
+      { version: "0.4.19" },
+    ],
   },
   networks: {
     // testnet (sepolia)
@@ -19,6 +19,12 @@ const config: HardhatUserConfig = {
       accounts: [process.env.ETH_SEPOLIA_PRIVATE_KEY_METAMASK as string],
       chainId: 11155111,
     },
+    hardhat: {
+      chainId: 31337,
+      forking: {
+        url: process.env.MAINNET_RPC_URL as string,
+      },
+    },
     // local network (ganache)
     ganache: {
       url: "http://127.0.0.1:7545",
@@ -26,6 +32,9 @@ const config: HardhatUserConfig = {
         "0x19037ca7066f570e7686c78118c7c196ea30cb00cffd37e33a6d92880d1e27cd",
       ],
       chainId: 1337,
+      forking: {
+        url: process.env.MAINNET_RPC_URL as string,
+      },
     },
     // local network (hardhat)
     localhost: {
@@ -34,6 +43,9 @@ const config: HardhatUserConfig = {
         "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
       ],
       chainId: 31337,
+      forking: {
+        url: process.env.MAINNET_RPC_URL as string,
+      },
     },
   },
   defaultNetwork: "hardhat",
@@ -42,15 +54,12 @@ const config: HardhatUserConfig = {
       (process.env.ETHERSCAN_API_KEY as string) ?? "YOUR_ETHERSCAN_API_KEY", // get it from https://etherscan.io/
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     outputFile: "gasReport.txt",
     noColors: true,
     currency: "INR",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY ?? "YOUR_API",
     token: "ETH",
-  },
-  mocha: {
-    timeout: 200000, // 200 sec max
   },
 };
 

@@ -1,9 +1,7 @@
-import type { HardhatUserConfig } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 
-import "@nomicfoundation/hardhat-toolbox";
-import "solidity-coverage";
-import "hardhat-contract-sizer";
-import "hardhat-gas-reporter";
+import "@nomicfoundation/hardhat-toolbox-viem";
+import "@nomicfoundation/hardhat-verify";
 
 import "dotenv/config";
 
@@ -42,15 +40,12 @@ const config: HardhatUserConfig = {
       (process.env.ETHERSCAN_API_KEY as string) ?? "YOUR_ETHERSCAN_API_KEY", // get it from https://etherscan.io/
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     outputFile: "gasReport.txt",
     noColors: true,
     currency: "INR",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY ?? "YOUR_API",
     token: "ETH",
-  },
-  mocha: {
-    timeout: 200000, // 200 sec max
   },
 };
 
