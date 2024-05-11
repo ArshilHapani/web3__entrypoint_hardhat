@@ -1,9 +1,6 @@
 import { ethers } from "hardhat";
-
-import getWeth, { AMOUNT } from "./getWeth";
 import { AaveHelper } from "../utils/Helper";
-
-export type Signer = Awaited<ReturnType<typeof ethers.getSigners>>[0];
+import getWeth, { AMOUNT } from "./getWeth";
 
 (async function () {
   const h = new AaveHelper();
@@ -61,7 +58,4 @@ export type Signer = Awaited<ReturnType<typeof ethers.getSigners>>[0];
 
   console.log("Repaying...");
   await h.repay(totalDebtETH, daiTokenAddress, lendingPool, deployer);
-  await h.getBorrowedUserData(deployer, lendingPool);
-  // we still have little bit of borrowed ETH which is interest
-  // to repay complete we can use uniswap to swap DAI to ETH and repay -- https://uniswap.org/
 })();

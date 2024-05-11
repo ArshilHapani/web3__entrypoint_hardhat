@@ -8,8 +8,10 @@ const config: HardhatUserConfig = {
   solidity: {
     compilers: [
       { version: "0.8.24" },
+      { version: "0.8.0" },
       { version: "0.6.6" },
       { version: "0.4.19" },
+      { version: "0.6.12" },
     ],
   },
   networks: {
@@ -29,7 +31,7 @@ const config: HardhatUserConfig = {
     ganache: {
       url: "http://127.0.0.1:7545",
       accounts: [
-        "0x19037ca7066f570e7686c78118c7c196ea30cb00cffd37e33a6d92880d1e27cd",
+        "0x658f947793d5aca78aba70bc6e575f72bbd8a3c291bbce7265c58d3874941cb9",
       ],
       chainId: 1337,
       forking: {
