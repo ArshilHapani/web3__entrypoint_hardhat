@@ -9,4 +9,7 @@ import { viem } from "hardhat";
   const deployer = (await viem.getWalletClients()).at(0)?.account.address;
   console.log({ deployer });
   console.log("Total supply is:", totalSupply.toString());
+
+  const arshil = await viem.deployContract("Arshil", ["Nami", "Arshil"]);
+  await arshil.read.getLover(["Nami"]);
 })();
