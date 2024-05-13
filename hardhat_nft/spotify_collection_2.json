@@ -1,0 +1,10 @@
+{
+  "name": "2023 Collector",
+  "description": "2023 Spotify Collector",
+  "image:": "ipfs://bafkreicisqzzeifxgji3v4hrulali5hlxmxau4qml6pnaynhdld7ozsliu/",
+  "attributes": {
+    "background_color": "#380B98",
+    "display_type": "cover",
+    "level": "2"
+  }
+}
