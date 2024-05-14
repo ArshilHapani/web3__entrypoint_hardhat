@@ -1,13 +1,18 @@
 import { network } from "hardhat";
+
 import getSigner from "../utils/getSigner";
 import { developmentChains, netWorkConfig } from "../helper-hardhat-config";
 import deployMocks from "../utils/deployMocks";
-import { uploadImageToNFTStorage } from "../utils/uploadImageToIPFS";
+import uploadImageToPinata from "../utils/uploadImageToPinata";
 
 const chainId = network.config.chainId ?? 31337;
 
 (async function () {
   const deployer = await getSigner();
+  let tokenUris: string[] = [];
+  if (process.env.UPLOAD_PINATA_FLAG) {
+    tokenUris = await uploadImageToPinata();
+  }
 
   let vrfCoordinatorV2Address: string = "",
     subscriptionId: string = "";
