@@ -15,10 +15,14 @@ const chainId = network.config.chainId ?? 1;
     console.log("Local network detected, deploying mocks...");
     const vrfCoordinatorV2Mock = await deployMocks();
     vrfCoordinatorV2Address = await vrfCoordinatorV2Mock.getAddress();
+    // step 1: create a subscription
     const transactionResponse = await vrfCoordinatorV2Mock.createSubscription();
     const transactionReceipt = await transactionResponse.wait(1);
     subscriptionId = (transactionReceipt?.logs[0] as any).args[0] as string;
+    console.log("Subscription ID:", subscriptionId); // 1n
+    // step 2: fund the subscription
     await vrfCoordinatorV2Mock.fundSubscription(subscriptionId, VRF_SUB_FEE);
+    // step 3: add consumer
     await vrfCoordinatorV2Mock.addConsumer(
       subscriptionId,
       vrfCoordinatorV2Mock.getAddress()
