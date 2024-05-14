@@ -1,24 +1,50 @@
+import { ethers } from "hardhat";
+
 const netWorkConfig: {
   [key: number]: {
     name: string;
-    ethUsdPriceFeed: string;
+    vrfCoordinatorV2: string;
+    entranceFee: bigint;
+    keyHash: string;
+    subscriptionId: string;
+    callbackGasLimit: string;
+    interval: number;
+    mintFee: bigint;
   };
 } = {
   11155111: {
     name: "sepolia",
-    ethUsdPriceFeed: "0x1a81afB8146aeFfCFc5E50e8479e826E7D55b910",
-  },
-  97: {
-    name: "bnb test net",
-    ethUsdPriceFeed: "0x143db3CEEfbdfe5631aDD3E50f7614B6ba708BA7",
-  },
-  80002: {
-    name: "amony",
-    ethUsdPriceFeed: "0xF0d50568e3A7e8259E16663972b11910F89BD8e7",
+    vrfCoordinatorV2: "0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625",
+    entranceFee: ethers.parseEther("0.000001"),
+    keyHash:
+      "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
+    subscriptionId: "2659",
+    // 15366376269897563744780985323350096414521302377970374217356556294839422166091
+    callbackGasLimit: "500000",
+    interval: 50,
+    mintFee: ethers.parseEther("0.001"),
   },
   1337: {
-    name: "ethereum ganache",
-    ethUsdPriceFeed: "0x1a81afB8146aeFfCFc5E50e8479e826E7D55b910",
+    name: "ganache",
+    vrfCoordinatorV2: "0x8C7382F9D8f56b33781fE506E897a4F1e2d17255",
+    entranceFee: ethers.parseUnits("0.05"),
+    keyHash:
+      "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
+    subscriptionId: "0",
+    callbackGasLimit: "500000",
+    interval: 50,
+    mintFee: ethers.parseEther("0.001"),
+  },
+  31337: {
+    name: "hardhat",
+    vrfCoordinatorV2: "0x8C7382F9D8f56b33781fE506E897a4F1e2d17255",
+    entranceFee: ethers.parseUnits("0.05"),
+    keyHash:
+      "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
+    subscriptionId: "0",
+    callbackGasLimit: "500000",
+    interval: 50,
+    mintFee: ethers.parseEther("0.001"),
   },
 };
 

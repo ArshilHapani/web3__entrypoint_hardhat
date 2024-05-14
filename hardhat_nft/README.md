@@ -14,3 +14,8 @@ We can do everything from scratch, similarly like ERC20 in the past but we have 
 
 Similarly, we can use openzeppelin for ERC721.
 [Read more](https://docs.openzeppelin.com/contracts/4.x/erc721)
+
+# To upload images on IPFS we can use two services
+
+1. With our own IPFS node. https://docs.ipfs.io/
+2. Pinata https://www.pinata.cloud/
