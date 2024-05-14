@@ -3,9 +3,22 @@ pragma solidity ^0.8.7;
 
 import {VRFCoordinatorV2Interface} from "@chainlink/contracts/src/v0.8/vrf/interfaces/VRFCoordinatorV2Interface.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {ERC721URIStorage, ERC721} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RandomIPFSNft is VRFConsumerBaseV2, ERC721 {
+error RandomIPFSNft__RequireMinFee();
+error RandomIPFSNft__WithdrawFailed();
+
+contract RandomIPFSNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
+    enum CollectionList {
+        GOLD,
+        SILVER,
+        LEGENDARY
+    }
+
+    event NftRequested(uint256 indexed _requestId, address _requestAddress);
+    event NftMinted(CollectionList collection, address minter);
+
     VRFCoordinatorV2Interface private immutable i_vrfCoordinator;
     uint64 private immutable i_subscriptionId;
     bytes32 private immutable i_gasLane;
@@ -18,20 +31,34 @@ contract RandomIPFSNft is VRFConsumerBaseV2, ERC721 {
 
     // NFT variables
     uint256 public s_tokenCounter;
+    uint256 internal constant MAX_CHANCE_VALUE = 50;
+    string[] internal s_collectionTokenUris;
+    uint256 internal i_mintFee;
 
     constructor(
         address vrfConsumerBaseV2,
         uint64 _subscriptionId,
         bytes32 _gasLane,
-        uint32 _callbackGasLimit
-    ) VRFConsumerBaseV2(vrfConsumerBaseV2) ERC721("SpotifyCollectives", "SPC") {
+        uint32 _callbackGasLimit,
+        string[3] memory _tokenURIs,
+        uint256 _mintFee
+    )
+        VRFConsumerBaseV2(vrfConsumerBaseV2)
+        ERC721("SpotifyCollectives", "SPC")
+        Ownable(msg.sender)
+    {
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfConsumerBaseV2);
         i_subscriptionId = _subscriptionId;
         i_gasLane = _gasLane;
         i_callbackGasLimit = _callbackGasLimit;
+        s_collectionTokenUris = _tokenURIs;
+        i_mintFee = _mintFee;
     }
 
-    function requestNFT() public returns (uint256 requestId) {
+    function requestNFT() public payable returns (uint256 requestId) {
+        if (msg.value < i_mintFee) {
+            revert RandomIPFSNft__RequireMinFee();
+        }
         requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -40,6 +67,15 @@ contract RandomIPFSNft is VRFConsumerBaseV2, ERC721 {
             NUM_WORdS
         );
         s_requestIdToSender[requestId] = msg.sender;
+        emit NftRequested(requestId, msg.sender);
+    }
+
+    function withdraw() public onlyOwner {
+        uint256 amount = address(this).balance;
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        if (!success) {
+            revert RandomIPFSNft__WithdrawFailed();
+        }
     }
 
     function fulfillRandomWords(
@@ -48,12 +84,48 @@ contract RandomIPFSNft is VRFConsumerBaseV2, ERC721 {
     ) internal override {
         address nftOwner = s_requestIdToSender[requestId];
         uint256 newTokenId = s_tokenCounter;
+
+        uint256 moddedRng = randomWords[0] % MAX_CHANCE_VALUE;
+        /**
+         * n is between 0 - 20 -> 20% chance
+         * n is between 20 - 50 -> 30% chance
+         * n is between 50 - 100 -> 50% chance
+         */
+        CollectionList cl = getCollectionFromModdedRng(moddedRng);
         _safeMint(nftOwner, newTokenId);
+        _setTokenURI(newTokenId, s_collectionTokenUris[uint256(cl)]);
+
+        emit NftMinted(cl, nftOwner);
     }
 
-    function getChanceArray() public pure returns (uint256[3] memory) {}
+    function getCollectionFromModdedRng(
+        uint256 moddedRng
+    ) public pure returns (CollectionList) {
+        uint256[3] memory chanceArray = getChanceArray();
+        if (moddedRng < chanceArray[0]) {
+            return CollectionList.GOLD;
+        } else if (moddedRng < chanceArray[1]) {
+            return CollectionList.SILVER;
+        } else {
+            return CollectionList.LEGENDARY;
+        }
+    }
 
-    function tokenURI(
-        uint256 tokenId
-    ) public view override returns (string memory) {}
+    function getChanceArray() public pure returns (uint256[3] memory) {
+        return [30, 20, MAX_CHANCE_VALUE];
+    }
+
+    function getMintFee() public view returns (uint256) {
+        return i_mintFee;
+    }
+
+    function getCollectionUri(
+        uint256 _index
+    ) public view returns (string memory) {
+        return s_collectionTokenUris[_index];
+    }
+
+    function getTokenCounter() public view returns (uint256) {
+        return s_tokenCounter;
+    }
 }
