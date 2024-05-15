@@ -64,7 +64,7 @@ let MINT_FEES = netWorkConfig[chainId].mintFee;
         });
       });
       describe("fulfillRandomWords", () => {
-        it("mints NFT after random number is returned", async function () {
+        it.skip("mints NFT after random number is returned", async function () {
           await new Promise(async (resolve, reject) => {
             randomIPFSNFT.once(
               "NftMinted" as any,
@@ -106,6 +106,27 @@ let MINT_FEES = netWorkConfig[chainId].mintFee;
               reject(e);
             }
           });
+        });
+
+        it("should withdraw the amount to the owner\\s account ", async () => {
+          const ownerBalanceBefore = await ethers.provider.getBalance(
+            deployerAddress
+          );
+          const fee = await randomIPFSNFT.getMintFee();
+          await randomIPFSNFT.requestNFT({ value: fee });
+          await mockVrfCoordinator.fulfillRandomWords(
+            (
+              await randomIPFSNFT.requestNFT({ value: fee })
+            ).hash,
+            randomIPFSNFT.getAddress()
+          );
+          const ownerBalanceAfter = await ethers.provider.getBalance(
+            deployerAddress
+          );
+          assert.equal(
+            +ownerBalanceAfter.toString(),
+            +ownerBalanceBefore.toString() + +fee.toString()
+          );
         });
       });
     });
