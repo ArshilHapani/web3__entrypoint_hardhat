@@ -2,11 +2,12 @@ import { ethers, network } from "hardhat";
 import { developmentChains } from "../helper-hardhat-config";
 import verifyContract from "../utils/verify";
 
-const chainId = network.config.chainId ?? 1337;
-
 (async function () {
+  await deployBasicNFT();
+})();
+
+export async function deployBasicNFT() {
   const deployer = (await ethers.getSigners()).at(0);
-  const args = [];
   const basicNFTFactory = await ethers.getContractFactory("BasicNFT", deployer);
   const basicNFT = await basicNFTFactory.deploy();
   await basicNFT.deploymentTransaction()?.wait(1);
@@ -20,4 +21,5 @@ const chainId = network.config.chainId ?? 1337;
     console.log(`Verifying contract on Etherscan.....`);
     await verifyContract(contractAddress, null);
   }
-})();
+  return basicNFT;
+}

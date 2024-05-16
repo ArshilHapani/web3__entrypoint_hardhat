@@ -10,6 +10,7 @@ const netWorkConfig: {
     callbackGasLimit: string;
     interval: number;
     mintFee: bigint;
+    priceFeedAddress: string;
   };
 } = {
   11155111: {
@@ -23,6 +24,7 @@ const netWorkConfig: {
     callbackGasLimit: "500000",
     interval: 50,
     mintFee: ethers.parseEther("0.001"),
+    priceFeedAddress: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
   },
   1337: {
     name: "ganache",
@@ -34,6 +36,7 @@ const netWorkConfig: {
     callbackGasLimit: "500000",
     interval: 50,
     mintFee: ethers.parseEther("0.001"),
+    priceFeedAddress: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
   },
   31337: {
     name: "hardhat",
@@ -45,11 +48,12 @@ const netWorkConfig: {
     callbackGasLimit: "500000",
     interval: 50,
     mintFee: ethers.parseEther("0.001"),
+    priceFeedAddress: "0x694AA1769357215DE4FAC081bf1f309aDC325306",
   },
 };
 
 const developmentChains = ["hardhat", "localhost", "ganache"];
 const DECIMALS = 8;
-const INITIAL_ANSWER = 200000000000;
+const INITIAL_ANSWER = 350000000000;
 
 export { netWorkConfig, developmentChains, DECIMALS, INITIAL_ANSWER };

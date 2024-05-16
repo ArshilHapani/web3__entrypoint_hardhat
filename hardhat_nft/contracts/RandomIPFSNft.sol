@@ -47,7 +47,7 @@ contract RandomIPFSNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     )
         VRFConsumerBaseV2(vrfConsumerBaseV2)
         ERC721("SpotifyCollectives", "SPC")
-        Ownable(msg.sender)
+        Ownable()
     {
         i_vrfCoordinator = VRFCoordinatorV2Interface(vrfConsumerBaseV2);
         i_subscriptionId = _subscriptionId;
