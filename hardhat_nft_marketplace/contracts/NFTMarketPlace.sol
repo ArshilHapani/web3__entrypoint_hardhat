@@ -1,10 +1,16 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
-
-import {NFTMarketPlace__Errors} from "./library/Errors.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
+import {NFTMarketPlace__Errors} from "./library/Errors.sol";
+
 contract NFTMarketPlace {
+    struct Listing {
+        uint256 price;
+        address seller;
+    }
+    mapping(uint256 => Listing) nftIdToListing;
+
     function listItem(
         address _nftAddress,
         uint256 _tokenId,
