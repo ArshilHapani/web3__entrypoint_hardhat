@@ -9,7 +9,7 @@ contract NFTMarketPlace {
         uint256 price;
         address seller;
     }
-    mapping(uint256 => Listing) nftIdToListing;
+    mapping(address => mapping(uint256 => Listing)) private s_listing;
 
     function listItem(
         address _nftAddress,
@@ -28,5 +28,6 @@ contract NFTMarketPlace {
         if (nft.getApproved(_tokenId) != address(this)) {
             revert NFTMarketPlace__Errors.NotApprovedForListing();
         }
+        s_listing[_nftAddress][_tokenId] = Listing(_price, msg.sender);
     }
 }
