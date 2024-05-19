@@ -6,14 +6,24 @@ import {NFTMarketPlace__Errors} from "./library/Errors.sol";
 import {Utils} from "./library/Utils.sol";
 
 contract NFTMarketPlace {
+    // NFT Contract address -> NFT tokenId -> Listing
     mapping(address => mapping(uint256 => Utils.Listing)) private s_listing;
+
+    // Seller address -> amount earned
+    mapping(address => uint256) private s_sellers;
 
     function listItem(
         address _nftAddress,
         uint256 _tokenId,
-        uint256 _price
-    ) external notListed(_nftAddress, _tokenId, msg.sender) {
-        if (_price <= 0) {
+        uint256 _priceInUsd,
+        address _contractAddress
+    )
+        external
+        notListed(_nftAddress, _tokenId, msg.sender)
+        isOwner(_nftAddress, _tokenId, msg.sender)
+    {
+        uint256 priceInEth = Utils.getUsdFromEth(_ethAmount, contractAddress);
+        if (_priceInUsd <= 0) {
             revert NFTMarketPlace__Errors.PriceMustBeAboveZero();
         }
         /**
@@ -27,6 +37,30 @@ contract NFTMarketPlace {
         }
         s_listing[_nftAddress][_tokenId] = Utils.Listing(_price, msg.sender);
         emit Utils.ItemListed(msg.sender, _nftAddress, _tokenId, _price);
+    }
+
+    function buyItem(
+        address _nftAddress,
+        uint256 _tokenId
+    ) external payable isListed(_nftAddress, _tokenId) {
+        Utils.Listing memory listedItem = s_listing[_nftAddress][_tokenId];
+        if (msg.value < listedItem.price) {
+            revert NFTMarketPlace__Errors.PriceRequirementNotMeet(
+                nftAddress,
+                tokenId,
+                listedItem.price
+            );
+        }
+        s_proceed[listedItem.seller] += msg.value;
+
+        // after buying this we want to delete the listing
+        delete (s_listing[_nftAddress][_tokenId]);
+        IERC721(_nftAddress).transferFrom(
+            listedItem.seller,
+            msg.sender,
+            _tokenId
+        );
+        // At Pull over Push (Make notes...)
     }
 
     ///////////////////////
@@ -52,6 +86,19 @@ contract NFTMarketPlace {
         uint256 _tokenId,
         address _spender
     ) {
+        IERC721 nft = IERC721(_nftAddress);
+        address owner = nft.ownerOf(_tokenId);
+        if (owner != _spender) {
+            revert NFTMarketPlace__Errors.NotOwner();
+        }
+        _;
+    }
+
+    modifier isListed(address _nftAddress, uint256 _tokenId) {
+        Utils.Listing memory listing = s_listing[_nftAddress][_tokenId];
+        if (listing.price <= 0) {
+            revert NFTMarketPlace__Errors.ItemNotListed(_nftAddress, _tokenId);
+        }
         _;
     }
 }
