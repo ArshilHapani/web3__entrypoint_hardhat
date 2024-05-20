@@ -39,4 +39,15 @@ library Utils {
         uint256 indexed tokenId,
         uint256 price
     );
+    event ItemBought(
+        address indexed seller,
+        address indexed nftAddress,
+        uint256 indexed tokenId,
+        uint256 price
+    );
+    event ItemCancelled(
+        address indexed seller,
+        address indexed nftAddress,
+        uint256 indexed tokenId
+    );
 }

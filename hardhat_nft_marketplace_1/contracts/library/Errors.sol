@@ -12,4 +12,6 @@ library NFTMarketPlace__Errors {
         uint256 tokenId,
         uint256 price
     );
+    error NoProceeds();
+    error TransferFailed();
 }

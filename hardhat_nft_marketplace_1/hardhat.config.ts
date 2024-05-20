@@ -5,15 +5,28 @@ import "@nomicfoundation/hardhat-ignition-ethers";
 
 import "dotenv/config";
 
+const settings = {
+  viaIR: true,
+  optimizer: {
+    enabled: true,
+    runs: 200,
+    details: {
+      yulDetails: {
+        optimizerSteps: "u",
+      },
+    },
+  },
+};
+
 const config: HardhatUserConfig = {
   // solidity: "0.8.24",
   solidity: {
     compilers: [
-      { version: "0.8.24" },
-      { version: "0.8.19" },
-      { version: "0.8.0" },
-      { version: "0.8.20" },
-      { version: "0.8.7" },
+      { version: "0.8.24", settings },
+      { version: "0.8.19", settings },
+      { version: "0.8.0", settings },
+      { version: "0.8.20", settings },
+      { version: "0.8.7", settings },
     ],
   },
   networks: {
