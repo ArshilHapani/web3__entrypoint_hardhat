@@ -2,31 +2,22 @@ import type { HardhatUserConfig } from "hardhat/config";
 
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ignition-ethers";
+import "@nomicfoundation/edr-win32-x64-msvc/edr.win32-x64-msvc.node";
 
 import "dotenv/config";
 
 const settings = {
   viaIR: true,
-  optimizer: {
-    enabled: true,
-    runs: 200,
-    details: {
-      yulDetails: {
-        optimizerSteps: "u",
-      },
-    },
-  },
 };
 
 const config: HardhatUserConfig = {
-  // solidity: "0.8.24",
   solidity: {
     compilers: [
       { version: "0.8.24", settings },
       { version: "0.8.19", settings },
-      { version: "0.8.0", settings },
-      { version: "0.8.20", settings },
-      { version: "0.8.7", settings },
+      { version: "0.8.0" },
+      { version: "0.8.20" },
+      { version: "0.8.7" },
     ],
   },
   networks: {
