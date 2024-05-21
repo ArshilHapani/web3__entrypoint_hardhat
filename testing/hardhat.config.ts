@@ -2,7 +2,6 @@ import type { HardhatUserConfig } from "hardhat/config";
 
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ignition-ethers";
-import "@nomicfoundation/edr-win32-x64-msvc/edr.win32-x64-msvc.node";
 
 import "dotenv/config";
 
@@ -31,7 +30,7 @@ const config: HardhatUserConfig = {
     ganache: {
       url: "http://127.0.0.1:7545",
       accounts: [
-        "0x19037ca7066f570e7686c78118c7c196ea30cb00cffd37e33a6d92880d1e27cd",
+        "0x7daabe9452faea110f83309008d749353e98163fe344a670fab16b5ccfcc0a5b",
       ],
       chainId: 1337,
     },
