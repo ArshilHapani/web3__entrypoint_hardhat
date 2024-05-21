@@ -1,9 +1,9 @@
-import type { HardhatUserConfig } from "hardhat/config";
-
+import { type HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ignition-ethers";
 
 import "dotenv/config";
+import "./tasks/deploy.task";
 
 const settings = {
   viaIR: true,
@@ -31,6 +31,7 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:7545",
       accounts: [
         "0x7daabe9452faea110f83309008d749353e98163fe344a670fab16b5ccfcc0a5b",
+        "0x50a4ac491c85f0f96e4b7ab14c82f24865b7729d9550481e822fb4e2169b66f0",
       ],
       chainId: 1337,
     },
@@ -55,9 +56,6 @@ const config: HardhatUserConfig = {
     currency: "INR",
     coinmarketcap: process.env.COINMARKETCAP_API_KEY ?? "YOUR_API",
     token: "ETH",
-  },
-  mocha: {
-    timeout: 200000, // 200 sec max
   },
 };
 
