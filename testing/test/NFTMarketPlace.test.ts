@@ -16,7 +16,8 @@ import BasicNFT from "../ignition/modules/02-BasicNFT";
   ? describe.skip
   : describe("MFT MarketPlace Tests Unit", () => {
       let nftMarketPlace: NFTMarketPlaceType;
-      const PRICE = 100; // IN USD (we have used oracles)
+      const PRICE_USD = 100; // IN USD (we have used oracles)
+      const PRICE_ETH = ethers.parseEther("100");
       const TOKEN_ID = 0;
       let deployer: string, player: string;
       let mockV3AggregatorAddress: string = "";
@@ -44,7 +45,7 @@ import BasicNFT from "../ignition/modules/02-BasicNFT";
         await nftMarketPlace.listItem(
           nftAddress,
           TOKEN_ID,
-          PRICE,
+          PRICE_USD,
           mockV3AggregatorAddress
         );
 
@@ -54,7 +55,9 @@ import BasicNFT from "../ignition/modules/02-BasicNFT";
         );
 
         // buying item
-        await nftMarketPlace.buyItem(nftAddress, TOKEN_ID);
+        await nftMarketPlace.buyItem(nftAddress, TOKEN_ID, {
+          value: PRICE_ETH,
+        });
 
         // checking that player actually owns the nft
         const newOwner = await basicNFT.ownerOf(TOKEN_ID);
@@ -63,10 +66,7 @@ import BasicNFT from "../ignition/modules/02-BasicNFT";
         const deployerProceed = await nftMarketPlace.getProceeds(deployer);
 
         assert(newOwner.toString() == player);
-        assert(
-          deployerProceed.toString() ==
-            ethers.parseEther(PRICE.toString()).toString()
-        );
+        assert(deployerProceed.toString() == PRICE_ETH.toString());
       });
     });
 
