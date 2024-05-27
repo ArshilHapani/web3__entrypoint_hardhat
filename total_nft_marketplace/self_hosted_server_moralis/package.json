@@ -16,6 +16,7 @@
     "graphql-ws": "^5.10.1",
     "moralis": "^2.26.2",
     "ngrok": "^4.3.3",
+    "node": "^19.8.1",
     "parse-server": "^5.4.0"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 "use client";
 
-import { ConnectWallet, MediaRenderer } from "@thirdweb-dev/react";
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 const ConnectButton = () => {
   return (
