@@ -1,12 +1,11 @@
-"use client";
-
-import ConnectButtonLocal from "@/components/ConnectButton";
+"use client"
 
 export default function Home() {
-  return (    
+  return (
     <div>
-      <h1 className="text-red-500 text-4xl">Hello World!</h1>
-      <ConnectButtonLocal />
+      <div className="border-b" >
+        <h1 className="text-4xl font-bold" >MarketPlace</h1>
+      </div>      
     </div>
   );
 }

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
 import "./globals.css";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="light">
       <body className={inter.className}>
-        <ThirdWebProviderComponent>{children}</ThirdWebProviderComponent>
+        <ThirdWebProviderComponent>
+          <Navbar />
+          <div className="container mx-auto py-10" >
+            {children}
+          </div>
+        </ThirdWebProviderComponent>
       </body>
     </html>
   );
