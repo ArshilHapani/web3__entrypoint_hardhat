@@ -21,6 +21,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       appId={import.meta.env.VITE_APPLICATION_ID!}
       serverUrl={import.meta.env.VITE_SERVER_URL}
     >
+
       <RouterProvider router={router} />
     </MoralisProvider>
   </React.StrictMode>
