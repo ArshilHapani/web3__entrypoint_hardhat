@@ -1,0 +1,31 @@
+type ActiveItem @entity {
+  id: ID! # ID is type and `!` means it is required
+  buyer: Bytes! # address (Dead address if not shown in the marketplace), (Actual address if it is purchased by someone)
+  seller: Bytes!
+  nftAddress: Bytes!
+  tokenId: BigInt! # uint256
+  price: BigInt # not required
+}
+
+type ItemListed @entity {
+  id: ID!
+  seller: Bytes!
+  nftAddress: Bytes!
+  tokenId: BigInt!
+  price: BigInt
+}
+
+type ItemCancelled @entity {
+  id: ID!
+  seller: Bytes!
+  nftAddress: Bytes!
+  tokenId: BigInt!
+}
+
+type ItemBought @entity {
+  id: ID!
+  buyer: Bytes!
+  nftAddress: Bytes!
+  tokenId: BigInt!
+  price: BigInt
+}
