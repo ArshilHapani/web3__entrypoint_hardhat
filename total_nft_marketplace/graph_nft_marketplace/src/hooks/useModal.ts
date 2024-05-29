@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type ModalType = `show-nft-${string}`;
+export type ModalType = `show-nft-${string}` | `update-price-${string}`;
 
 interface ModalState {
   modalType: ModalType | null;

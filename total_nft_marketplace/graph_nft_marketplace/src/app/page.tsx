@@ -37,7 +37,7 @@ export default function Home() {
   );
 }
 
-function SkeletonLoader({ count }: { count: number }) {
+export function SkeletonLoader({ count }: { count: number }) {
   return (
     <>
       <div className="skeleton w-40 h-10 mb-10"></div>

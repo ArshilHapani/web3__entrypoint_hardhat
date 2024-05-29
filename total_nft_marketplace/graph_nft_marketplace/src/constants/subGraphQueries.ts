@@ -15,3 +15,20 @@ export const getActiveItems = gql`
     }
   }
 `;
+
+export function getMyNFTs(address: string) {
+  return gql`  
+  {    
+    activeItems(
+      where: { seller:  "${address}" }
+    ) {
+      id
+      seller
+      nftAddress
+      tokenId
+      price
+      buyer
+    }    
+  }
+`;
+}

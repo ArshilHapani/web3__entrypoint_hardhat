@@ -22,6 +22,7 @@ type Props<T extends FieldValues> = {
     | "search"
     | "time"
     | "datetime-local";
+  isAddress?: boolean;
 };
 
 function TextField<FormSchema extends FieldValues>({
@@ -34,6 +35,7 @@ function TextField<FormSchema extends FieldValues>({
   placeholder,
   disabled,
   type = "text",
+  isAddress,
 }: Props<FormSchema>) {
   return (
     <div>
@@ -45,7 +47,10 @@ function TextField<FormSchema extends FieldValues>({
         </div>
         <input
           type={type}
-          {...register(name as Path<FormSchema>, { required })}
+          {...register(name as Path<FormSchema>, {
+            required,
+            pattern: isAddress ? /^0x[a-fA-F0-9]{40}$/ : undefined,
+          })}
           placeholder={placeholder}
           className={twMerge(
             "input input-bordered",
