@@ -57,8 +57,6 @@ contract NFTMarketPlace is ReentrancyGuard {
 
         // after buying this we want to delete the listing
         delete (s_listings[_nftAddress][_tokenId]);
-        console.log("Seller ", listedItem.seller);
-        console.log("Buyer ", msg.sender);
         IERC721(_nftAddress).safeTransferFrom(
             listedItem.seller,
             msg.sender,

@@ -4,6 +4,7 @@
 import { Copy } from "lucide-react";
 import Modal from "./Modal";
 import toast from "react-hot-toast";
+import useContract from "@/hooks/useContract";
 
 type Props = {
   image: string;
@@ -30,12 +31,27 @@ const ShowNFTModal = ({
     navigator.clipboard.writeText(content);
     toast.success(`${content} copied to clipboard`);
   }
+  const contract = useContract(nftAddress);
+  async function buyItem() {
+    toast.promise(
+      new Promise(async (res, rej) => {
+        const flg = await contract.buyNFT(Number(tokenId), price);
+        if (flg) res(true);
+        else rej(false);
+      }),
+      {
+        loading: "Buying item...",
+        success: "Item bought successfully... Changes will reflect soon",
+        error: "Failed to buy item. Please try again later",
+      }
+    );
+  }
   return (
     <Modal
       type={`show-nft-${nftAddress}${tokenId}`}
-      className="w-fit min-w-[350px]"
+      className="w-fit min-w-[400px]"
     >
-      <div>
+      <div className="p-3">
         <img
           src={image}
           alt={name}
@@ -88,7 +104,9 @@ const ShowNFTModal = ({
           </div>
         </div>
         {owner != "you" && (
-          <button className="btn btn-outline mt-6">Buy NFT</button>
+          <button onClick={buyItem} className="btn btn-outline mt-6">
+            Buy NFT
+          </button>
         )}
       </div>
     </Modal>

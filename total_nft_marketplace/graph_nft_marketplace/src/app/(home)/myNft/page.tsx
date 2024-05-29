@@ -11,7 +11,7 @@ import { MyNFTApolloReturnData } from "@/utils/types";
 
 export default function MyNFT() {
   const { address } = useThirdwebConnectedWalletContext();
-  const { data, loading, error } = useQuery(getMyNFTs(address ?? ""));
+  const { data, loading, error, refetch } = useQuery(getMyNFTs(address ?? ""));
   let nftData = data as MyNFTApolloReturnData;
   if (error) return <p>Error: {error.message}</p>;
   if (loading) return <SkeletonLoader count={5} />;
@@ -22,7 +22,7 @@ export default function MyNFT() {
       <Heading title="My NFT's" />
       <div className="flex gap-6 flex-wrap">
         {nftData.activeItems.map((item: any) => (
-          <NFTBox key={item.id} item={item} />
+          <NFTBox key={item.id} item={item} refetch={refetch} />
         ))}
       </div>
     </div>

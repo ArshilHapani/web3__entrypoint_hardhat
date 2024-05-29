@@ -12,7 +12,7 @@ import { ReturnedData } from "@/utils/types";
 
 export default function Home() {
   const { address, wallet } = useThirdwebConnectedWalletContext();
-  const { loading, error, data } = useAppolloQuery(getActiveItems);
+  const { loading, error, data, refetch } = useAppolloQuery(getActiveItems);
   let ndata = data as ReturnedData;
   const [balance, setBalance] = useState("");
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function Home() {
       <Heading title="Recent Listings" />
       <div className="flex gap-6 flex-wrap">
         {ndata.activeItems.map((item: any) => (
-          <NFTBox key={item.id} item={item} />
+          <NFTBox key={item.id} item={item} refetch={refetch} />
         ))}
       </div>
     </div>

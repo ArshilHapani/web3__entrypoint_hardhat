@@ -9,12 +9,15 @@ import toast from "react-hot-toast";
 
 import { ReturnedData } from "@/utils/types";
 import useModal from "@/hooks/useModal";
-import ShowNFTModal from "./modals/ShowNFT";
 import { getTokenURI } from "@/utils/web3";
 import useContract from "@/hooks/useContract";
 
+import ShowNFTModal from "./modals/ShowNFT";
+import UpdatePriceModal from "./modals/UpdatePriceModal";
+
 type Props = {
   item: ReturnedData["activeItems"][0];
+  refetch?: () => any;
 };
 type NFTResponse = {
   name: string;
@@ -25,6 +28,7 @@ type NFTResponse = {
 
 const NFTBox = ({
   item: { nftAddress, tokenId, buyer, price, seller },
+  refetch,
 }: Props) => {
   const { wallet, signer, address } = useThirdwebConnectedWalletContext();
   const [nftData, setNftData] = useState({
@@ -32,6 +36,16 @@ const NFTBox = ({
     description: "",
     image: "",
   });
+
+  const isOwnedByYou =
+    seller.toLowerCase() == address?.toLocaleLowerCase() || seller == undefined;
+  const { openModal } = useModal();
+  const contract = useContract(nftAddress);
+  const formattedSellerAddress = isOwnedByYou
+    ? "you"
+    : seller?.slice(0, 6) + "..." + seller?.slice(-4);
+  const isItemArchived = buyer == "0x000000000000000000000000000000000000dead";
+
   useEffect(() => {
     (async function () {
       const tokenUri = await getTokenURI(nftAddress, tokenId, signer);
@@ -53,24 +67,17 @@ const NFTBox = ({
       }
     })();
   }, [nftAddress, signer, tokenId, wallet]);
-  const isOwnedByYou =
-    seller.toLowerCase() == address?.toLocaleLowerCase() || seller == undefined;
-  const { openModal } = useModal();
-  const contract = useContract(nftAddress);
-  const formattedSellerAddress = isOwnedByYou
-    ? "you"
-    : seller?.slice(0, 6) + "..." + seller?.slice(-4);
-  const isItemArchived = buyer == "0x000000000000000000000000000000000000dead";
+
   async function handleArchive() {
     toast.promise(
       new Promise(async (res, rej) => {
         const flg = await contract.archiveNFT(tokenId);
-        if (flg) res(true);
+        if (flg) refetch && refetch(), res(true);
         else rej(false);
       }),
       {
         loading: "Archiving NFT...",
-        success: "NFT archived successfully...",
+        success: "NFT archived successfully... Changes will reflect soon..",
         error: "Failed to archive NFT. Please try again later",
       }
     );
@@ -81,14 +88,14 @@ const NFTBox = ({
         const flg = await contract.listNFT(
           nftAddress,
           Number(tokenId),
-          Number(price)
+          Number(ethers.utils.formatUnits(price))
         );
-        if (flg) res(true);
+        if (flg) refetch && refetch(), res(true);
         else rej(false);
       }),
       {
         loading: "Re-archiving NFT...",
-        success: "NFT re-archived successfully...",
+        success: "NFT re-archived successfully... Changes will reflect soon..",
         error: "Failed to re-archive NFT. Please try again later",
       }
     );
@@ -121,7 +128,9 @@ const NFTBox = ({
             {isOwnedByYou && !isItemArchived && (
               <button
                 className="btn btn-outline text-white"
-                onClick={() => openModal(`update-price-${nftAddress}${price}`)}
+                onClick={() =>
+                  openModal(`update-price-${nftAddress}${tokenId}`)
+                }
               >
                 Update Price
               </button>
@@ -159,6 +168,8 @@ const NFTBox = ({
           owned by {formattedSellerAddress}
         </h3>
       </div>
+
+      {/* modals */}
       <ShowNFTModal
         description={nftData.description}
         image={nftData.image}
@@ -168,6 +179,11 @@ const NFTBox = ({
         tokenId={tokenId}
         owner={formattedSellerAddress}
         sellerAddress={seller}
+      />
+      <UpdatePriceModal
+        nftAddress={nftAddress}
+        tokenId={Number(tokenId)}
+        price={ethers.utils.formatUnits(price)}
       />
     </>
   );

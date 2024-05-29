@@ -18,9 +18,9 @@ export async function getTokenURI(
  * For NFT MarketPlace Contract
  */
 export class Web3NFTUtils {
-  signer: Signer | undefined = undefined;
-  nftAddress: string;
-  contract: Contract;
+  private signer: Signer | undefined = undefined;
+  private nftAddress: string;
+  private contract: Contract;
 
   constructor(signer: Signer | undefined, nftAddress: string) {
     this.signer = signer;
@@ -39,17 +39,11 @@ export class Web3NFTUtils {
 
   async listNFT(newNftAddress: string, tokenId: number, price: number) {
     try {
-      console.log({
-        newNftAddress,
-        price: ethers.utils.parseUnits(price.toString()).toBigInt(),
-      });
-      console.log(this.contract.interface.format());
-      const tx = await this.contract.listItem(
+      await this.contract.listItem(
         newNftAddress.toString(),
         tokenId,
         ethers.utils.parseUnits(price.toString())
       );
-      console.log({ tx });
       return true;
     } catch (error: any) {
       console.error(error);
@@ -62,8 +56,45 @@ export class Web3NFTUtils {
 
   async archiveNFT(tokenId: string) {
     try {
-      const tx = await this.contract.cancelItem(this.nftAddress, tokenId);
-      console.log({ tx });
+      await this.contract.cancelItem(this.nftAddress, tokenId);
+      return true;
+    } catch (error: any) {
+      console.error(error);
+      return false;
+    }
+  }
+  async updatePrice(tokenId: number, price: string) {
+    try {
+      await this.contract.updateListing(
+        this.nftAddress,
+        tokenId,
+        ethers.utils.parseUnits(price),
+        {
+          gasLimit: 5000000,
+        }
+      );
+      return true;
+    } catch (error: any) {
+      console.error(error);
+      return false;
+    }
+  }
+
+  async buyNFT(tokenId: number, price: string) {
+    try {
+      await this.contract.buyItem(this.nftAddress, tokenId, {
+        gasLimit: 5000000,
+        value: ethers.utils.parseUnits(price),
+      });
+      return true;
+    } catch (error: any) {
+      console.error(error);
+      return false;
+    }
+  }
+  async withDrawProceeds() {
+    try {
+      await this.contract.withDrawProceed();
       return true;
     } catch (error: any) {
       console.error(error);
@@ -71,8 +102,3 @@ export class Web3NFTUtils {
     }
   }
 }
-
-/**
- * 0x3f768f96c58188b58b23b2d1a03fbaaf55e0e36f
- * 2
- */

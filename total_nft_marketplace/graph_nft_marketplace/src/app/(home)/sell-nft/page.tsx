@@ -2,6 +2,7 @@
 
 import { useThirdwebConnectedWalletContext } from "@thirdweb-dev/react";
 import { useEffect, useState } from "react";
+import { BigNumber, ethers } from "ethers";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -29,7 +30,7 @@ export default function SellNFT() {
     },
   });
   const { wallet, signer, address } = useThirdwebConnectedWalletContext();
-  const [proceeds, setProceeds] = useState(0);
+  const [proceeds, setProceeds] = useState(BigNumber.from(0));
   const [loading, setLoading] = useState(false);
   const ct = useContract("");
 
@@ -37,7 +38,7 @@ export default function SellNFT() {
     (async function () {
       if (address) {
         const proceeds = await ct.getProceeds();
-        setProceeds(proceeds.toNumber());
+        setProceeds(proceeds);
       }
     })();
   }, [address, ct, signer, wallet]);
@@ -53,6 +54,20 @@ export default function SellNFT() {
       });
     }
     setLoading(false);
+  }
+  async function withdrawProceeds() {
+    toast.promise(
+      new Promise(async (res, rej) => {
+        const flg = await ct.withDrawProceeds();
+        if (flg) res(true);
+        else rej(false);
+      }),
+      {
+        loading: "Withdrawing proceeds...",
+        success: "Proceeds withdrawn successfully... Changes will reflect soon",
+        error: "Failed to withdraw proceeds",
+      }
+    );
   }
   return (
     <div>
@@ -104,19 +119,22 @@ export default function SellNFT() {
       <Heading title="Proceeds" className="mt-6" />
       <div className="space-y-3 border lg:w-[70%] w-full rounded-lg px-10 py-6">
         <h1 className="text-3xl font-bold text-gray-500">Available Proceeds</h1>
-        {proceeds == 0 ? (
+        {proceeds == BigNumber.from(0) ? (
           <h3 className="text-xl font-semibold mt-2 text-gray-700">
             No proceeds available
           </h3>
         ) : (
           <h1 className="text-xl font-semibold mt-2 text-gray-700">
-            {proceeds} ETH <br />
+            {ethers.utils.formatUnits(proceeds)} ETH <br />
             <button
-              disabled={proceeds <= 0.99}
+              // disabled={proceeds <= BigNumber.from(0.99)}
               className="btn btn-outline mt-3 tooltip"
-              data-tip={`${
-                proceeds <= 0.99 ? "Require minimum 1 ETH" : "Withdraw"
-              }`}
+              // data-tip={`${
+              //   proceeds <= BigNumber.from(0.99)
+              //     ? "Require minimum 1 ETH"
+              //     : "Withdraw"
+              // }`}
+              onClick={withdrawProceeds}
             >
               Withdraw
             </button>
