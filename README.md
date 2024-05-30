@@ -17,3 +17,18 @@ This repo contains following projects:
   - `nft_marketplace_moralis` - Hate to admit it but frontend part using moralis (which sucks)
   - `nft_marketplace_subgraph_backend_server` - Backend server setup and configuration for graph
   - `self_hosted_server_moralis` - Server for moralis
+- Hardhat Upgrades
+  - `hardhat_upgrades` - Hardhat upgrades for smart contracts
+  - It includes proxies, transparent proxies, and upgradeable contracts
+
+# Auditing and security
+
+The two most common attack:
+
+- Reentrancy
+- Oracle Manipulation
+
+Before you deploy anything always
+
+- Run slither
+- look manually for oracle manipulation examples or reentrancy attacks
