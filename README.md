@@ -32,11 +32,3 @@ Before you deploy anything always
 
 - Run slither
 - look manually for oracle manipulation examples or reentrancy attacks
-
-main apparently
-changes made in development
-changes 2 made in development
-changes 3 made in development
-changes 4 made in development
-changes 5 made in development
-changes 6 made in development
