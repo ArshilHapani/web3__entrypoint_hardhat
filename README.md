@@ -1,4 +1,4 @@
-# web3\_\_entrypoint
+# web3 entrypoint
 
 This repo contains following projects:
 
